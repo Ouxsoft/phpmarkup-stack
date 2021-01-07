@@ -1,0 +1,201 @@
+#!/bin/bash
+# Simple shell script to run commonly used features
+
+arg_1="$1"
+arg_2="$2"
+arg_3="$3"
+
+function show_help {
+  echo "
+  Available commands:
+
+  start [environment]        - Start development environment containers
+  stop [environment]         - Stop development environment containers
+  exec [container]           - Exec program inside the container
+  kill [container]           - Kill a container
+  config                     - Show docker config
+  errors                     - Show apache2 error log
+  wipe                       - Remove all docker containers
+  top                        - Show top processes
+  ps                         - Show stack processes
+  build {clean}              - Build containers
+  up                         - Bring development environment up
+  down                       - Bring development environment down
+  test                       - Run PHPUnit tests
+  help                       - Show this message
+"
+}
+
+function docker_ps {
+  docker-compose ps
+}
+
+function docker_kill {
+  local $container=$1
+  docker-compose kill $container
+}
+
+function docker_logs {
+  docker-compose logs
+}
+
+function docker_top {
+  docker-compose top
+}
+
+function docker_up {
+  docker-compose up
+}
+
+function docker_down {
+  docker-compose down
+}
+
+function docker_wipe {
+  docker system prune -a
+}
+
+function docker_exec {
+  local container=$1
+  local cmd="${@:2:99}"
+  if [ "$cmd" = "" ]; then
+    docker exec -it $container bash
+  else
+    echo "Run $container $cmd"
+    docker exec $container $cmd
+  fi
+}
+
+function docker_start {
+  local env=$1
+  if [ "$env" = "" ]; then
+    env="dev"
+  fi
+  if [ -f "./docker-compose.$env.yml" ]; then
+    echo "Start containers for $env environment"
+    if [ -f "./docker-compose.override.yml" ]; then
+      docker-compose \
+      -f docker-compose.yml \
+      -f docker-compose.override.yml \
+      -f docker-compose.$env.yml \
+      up -d --remove-orphans
+    else
+      docker-compose \
+      -f docker-compose.yml \
+      -f docker-compose.$env.yml \
+      up -d --remove-orphans
+    fi
+    # must be ran outside of Dockerfile due to mount
+    echo "Update composer"
+    docker exec livingmarkup-php-fpm composer update -d .
+    docker exec livingmarkup-php-fpm composer dump-autoload --optimize -d .
+  else
+    echo "A valid stack environment required, e.g.:"
+    echo "./stack start dev"
+  fi
+}
+
+function docker_stop {
+  local env=$1
+  if [ "$env" = "" ]; then
+    env="dev"
+  fi
+  if [ -f "./docker-compose.$env.yml" ]; then
+    echo "Stop containers for $env environment"
+    if [ -f "./docker-compose.override.yml" ]; then
+      docker-compose \
+      -f docker-compose.yml \
+      -f docker-compose.override.yml \
+      -f docker-compose.$env.yml \
+      down
+    else
+      docker-compose \
+      -f docker-compose.yml \
+      -f docker-compose.$env.yml \
+      down
+    fi
+  else
+    echo "A valid stack environment required, e.g.:"
+    echo "./stack stop dev"
+  fi
+}
+
+function docker_config {
+  local env=$1
+  if [ "$env" = "" ]; then
+    env="dev"
+  fi
+  if [ -f "./docker-compose.$env.yml" ]; then
+    echo "Show config for $env environment"
+    if [ -f "./docker-compose.override.yml" ]; then
+      docker-compose \
+      -f docker-compose.yml \
+      -f docker-compose.override.yml \
+      -f docker-compose.$env.yml \
+      config
+    else
+      docker-compose \
+      -f docker-compose.yml \
+      -f docker-compose.$env.yml \
+      config
+    fi
+  else
+    echo "A valid stack environment required, e.g.:"
+    echo "./stack config dev"
+  fi
+}
+
+function docker_build {
+  local param_1=$1
+  echo "Build web server container"
+  if [ "$param_1" == "clean" ]; then
+    docker-compose build --pull --no-cache
+  else
+    docker-compose build
+  fi
+}
+
+function docker_test {
+  docker exec livingmarkup-php-fpm composer test
+}
+
+function docker_errors {
+  echo "Tailing NGINX Error Log"
+  docker exec livingmarkup-webserver tail ../var/log/nginx/error.log
+}
+
+function nginx_reload {
+  docker exec -it livingmarkup-webserver nginx -s reload
+}
+
+if [ "$arg_1" == "start" ]; then
+  docker_start $arg_2
+elif [ "$arg_1" == "stop" ]; then
+  docker_stop $arg_2
+elif [ "$arg_1" == "exec" ]; then
+  docker_exec $arg_2 ${@:3:99}
+elif [ "$arg_1" == "kill" ]; then
+  docker_kill $arg_2
+elif [ "$arg_1" == "config" ]; then
+  docker_config $arg_2
+elif [ "$arg_1" == "errors" ]; then
+  docker_errors
+elif [ "$arg_1" == "wipe" ]; then
+  docker_wipe
+elif [ "$arg_1" == "top" ]; then
+  docker_top
+elif [ "$arg_1" == "ps" ]; then
+  docker_ps
+elif [ "$arg_1" == "build" ]; then
+  docker_build $arg_2
+elif [ "$arg_1" == "up" ]; then
+  docker_up
+elif [ "$arg_1" == "down" ]; then
+  docker_down
+elif [ "$arg_1" == "test" ]; then
+  docker_test
+elif [ "$arg_1" == "help" ]; then
+  show_help
+else
+  show_help
+fi

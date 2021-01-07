@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: livingmarkup-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - proxynet
+
+  jenkins:
+    build: ./docker/jenkins
+    container_name: livingmarkup-jenkins
+    volumes:
+      - ./docker/jenkins/jenkins_home:/var/jenkins_home
+    ports:
+      - "8081:8081"
+    environment:
+      - VIRTUAL_HOST=cd.localhost
+      - VIRTUAL_PORT=8081
+    networks:
+      - proxynet
+
+  php-fpm:
+    networks:
+      - proxynet
+
+networks:
+  proxynet:
+    external: false
