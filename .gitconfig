@@ -1,6 +1,12 @@
+# prevent pushing to master
+[branch "master"]
+  pushRemote = no_push
+
+# add commit template
 [commit]
   template = .gitmessage.txt
 
+# set colors
 [color]
   ui = true
 
