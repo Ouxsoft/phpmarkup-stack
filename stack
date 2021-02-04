@@ -27,7 +27,8 @@ function show_help {
 }
 
 function docker_ps {
-  docker-compose ps
+  docker-compose ps --all
+
 }
 
 function docker_kill {
@@ -58,7 +59,14 @@ function docker_wipe {
 function docker_exec {
   local container=$1
   local cmd="${@:2:99}"
+
+
+  if [ "$container" = "" ]; then
+    container="php-fpm"
+  fi
+
   if [ "$cmd" = "" ]; then
+    echo "Exec into $container"
     docker exec -it $container bash
   else
     echo "Run $container $cmd"
@@ -87,8 +95,8 @@ function docker_start {
     fi
     # must be ran outside of Dockerfile due to mount
     echo "Update composer"
-    docker exec livingmarkup-php-fpm composer update -d .
-    docker exec livingmarkup-php-fpm composer dump-autoload --optimize -d .
+    docker exec php-fpm composer update -d .
+    docker exec php-fpm composer dump-autoload --optimize -d .
   else
     echo "A valid stack environment required, e.g.:"
     echo "./stack start dev"
@@ -156,16 +164,7 @@ function docker_build {
 }
 
 function docker_test {
-  docker exec livingmarkup-php-fpm composer test
-}
-
-function docker_errors {
-  echo "Tailing NGINX Error Log"
-  docker exec livingmarkup-webserver tail ../var/log/nginx/error.log
-}
-
-function nginx_reload {
-  docker exec -it livingmarkup-webserver nginx -s reload
+  docker exec php-fpm composer test
 }
 
 if [ "$arg_1" == "start" ]; then
@@ -178,8 +177,6 @@ elif [ "$arg_1" == "kill" ]; then
   docker_kill $arg_2
 elif [ "$arg_1" == "config" ]; then
   docker_config $arg_2
-elif [ "$arg_1" == "errors" ]; then
-  docker_errors
 elif [ "$arg_1" == "wipe" ]; then
   docker_wipe
 elif [ "$arg_1" == "top" ]; then

@@ -3,7 +3,7 @@ services:
 
     php-fpm:
       build: ./docker/php-fpm
-      container_name: livingmarkup-php-fpm
+      container_name: php-fpm
       working_dir: /application
       volumes:
         - ./app:/application

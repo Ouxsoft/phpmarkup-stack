@@ -4,7 +4,7 @@ services:
 
   nginx-proxy:
     image: jwilder/nginx-proxy
-    container_name: livingmarkup-proxy
+    container_name: proxy
     ports:
       - "80:80"
     volumes:
@@ -12,9 +12,13 @@ services:
     networks:
       - proxynet
 
+  php-fpm:
+    networks:
+      - proxynet
+
   jenkins:
     build: ./docker/jenkins
-    container_name: livingmarkup-jenkins
+    container_name: jenkins
     volumes:
       - ./docker/jenkins/jenkins_home:/var/jenkins_home
     ports:
@@ -25,9 +29,13 @@ services:
     networks:
       - proxynet
 
-  php-fpm:
-    networks:
-      - proxynet
+  sphinx-docs:
+    build: ./docker/sphinx-docs
+    working_dir: /docs
+    container_name: sphinx-docs
+    tty: true
+    volumes:
+      - ./app:/app
 
 networks:
   proxynet:
