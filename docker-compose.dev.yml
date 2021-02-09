@@ -31,7 +31,7 @@ services:
 
   sphinx-docs:
     build: ./docker/sphinx-docs
-    working_dir: /docs
+    working_dir: /app/docs
     container_name: sphinx-docs
     tty: true
     volumes:
