@@ -23,14 +23,11 @@ RUN pip install sphinxcontrib-phpdomain \
  && pip install doxyphp2sphinx
 
 
-# to generate PHPDoc to doxygen XML run:
-# doxygen doxyfile
+# Need rstgenerator.py from https://github.com/silverfoxy/doxyphp2sphinx
+# or it will not build
 
-# to gen
-# make html READTHEDOCS=True
-
+# to build docs run
 # doxygen
 # doxyphp2sphinx Ouxsoft::LivingMarkup
-
 
 WORKDIR "/app/docs"

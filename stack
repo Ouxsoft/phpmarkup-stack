@@ -167,6 +167,7 @@ function docker_test {
   docker exec php-fpm composer test
 }
 
+
 if [ "$arg_1" == "start" ]; then
   docker_start $arg_2
 elif [ "$arg_1" == "stop" ]; then
