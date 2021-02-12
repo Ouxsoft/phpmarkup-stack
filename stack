@@ -19,6 +19,7 @@ function show_help {
   top                        - Show top processes
   ps                         - Show stack processes
   build {clean}              - Build containers
+  docs                       - Build ./app/docs
   up                         - Bring development environment up
   down                       - Bring development environment down
   test                       - Run PHPUnit tests
@@ -27,8 +28,7 @@ function show_help {
 }
 
 function docker_ps {
-  docker-compose ps --all
-
+   docker ps
 }
 
 function docker_kill {
@@ -167,6 +167,17 @@ function docker_test {
   docker exec php-fpm composer test
 }
 
+function docker_build_docs {
+  echo "Build Docs"
+  docker build \
+    -t ouxsoft:sphinx-docs \
+    -f ./docker/sphinx-docs/Dockerfile .
+  docker run --mount \
+    type=bind,src=$PWD/app,dst=/app \
+    -t ouxsoft:sphinx-docs \
+    bash -c ./build.sh
+}
+
 
 if [ "$arg_1" == "start" ]; then
   docker_start $arg_2
@@ -186,6 +197,8 @@ elif [ "$arg_1" == "ps" ]; then
   docker_ps
 elif [ "$arg_1" == "build" ]; then
   docker_build $arg_2
+elif [ "$arg_1" == "docs" ]; then
+  docker_build_docs
 elif [ "$arg_1" == "up" ]; then
   docker_up
 elif [ "$arg_1" == "down" ]; then
