@@ -42,5 +42,3 @@ RUN apt-get update \
 WORKDIR "/app/docs"
 
 SHELL ["/bin/bash", "-c"]
-
-#RUN /app/docs/build.sh
