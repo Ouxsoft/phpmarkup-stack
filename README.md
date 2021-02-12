@@ -1,3 +1,5 @@
+<p align="center"><img src="https://github.com/ouxsoft/LivingMarkup/raw/master/docs/logo.jpg" width="400"></p>
+
 # LivingMarkupDev
 
 A stack environment dedicated to continuously deploying the [LivingMarkup](https://github.com/ouxsoft/LivingMarkup) 
