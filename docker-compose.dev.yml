@@ -5,6 +5,7 @@ services:
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: proxy
+    restart: always
     ports:
       - "80:80"
     volumes:
@@ -19,6 +20,7 @@ services:
   jenkins:
     build: ./docker/jenkins
     container_name: jenkins
+    restart: always
     volumes:
       - ./docker/jenkins/jenkins_home:/var/jenkins_home
     depends_on:
@@ -34,8 +36,6 @@ services:
   sphinx-docs:
     build: ./docker/sphinx-docs
     container_name: sphinx-docs
-#    restart: always
-#    tty: true
     volumes:
       - ./app:/app
 
