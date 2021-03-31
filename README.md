@@ -11,6 +11,7 @@ Clone repo using [Git](https://git-scm.com/downloads).
 ```shell script
 git clone --recurse-submodules git@github.com:ouxsoft/phpmarkup-stack.git
 ```
+Run `git submodule update --init` to add submodule after git clone.
 
 Start the stack environment using the shell script and [Docker](https://www.docker.com/products/docker-desktop).
 ```shell script
