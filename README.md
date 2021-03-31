@@ -1,15 +1,15 @@
-<p align="center"><img src="https://github.com/ouxsoft/LivingMarkup/raw/master/docs/logo.jpg" width="400"></p>
+<p align="center"><img src="https://github.com/Ouxsoft/phpmarkup/raw/master/docs/logo.jpg" width="350"></p>
 
-# LivingMarkupDev
+# PHPMarkup Stack
 
-A stack environment dedicated to continuously deploying the [LivingMarkup](https://github.com/ouxsoft/LivingMarkup) 
+A stack environment dedicated to continuously deploying the [PHPMarkup](https://github.com/Ouxsoft/phpmarkup) 
 package.
 
 ## Getting Started
 
 Clone repo using [Git](https://git-scm.com/downloads).
 ```shell script
-git clone --recurse-submodules git@github.com:ouxsoft/livingmarkup-dev.git
+git clone --recurse-submodules git@github.com:ouxsoft/phpmarkup-stack.git
 ```
 
 Start the stack environment using the shell script and [Docker](https://www.docker.com/products/docker-desktop).
